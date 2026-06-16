@@ -9,7 +9,7 @@ import { transfersRoutes } from "./routes/transfers.routes.js";
 export const app: Express = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "16kb" }));
 
 app.use("/", healthRoutes);
 app.use("/users", usersRoutes);

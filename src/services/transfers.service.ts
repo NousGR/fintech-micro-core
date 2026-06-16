@@ -18,15 +18,24 @@ export class TransferError extends Error {
 }
 
 const isUUID = (str: string) => 
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
-const buildAccountWhere = (identifier: string) => {
-  return isUUID(identifier) ? { id: identifier } : { accountNumber: identifier };
+const getAccount = async (identifier: string) => {
+  const cleanId = identifier.trim();
+  if (isUUID(cleanId)) {
+    const account = await prisma.account.findUnique({ where: { id: cleanId } });
+    if (account) return account;
+  }
+  return prisma.account.findUnique({ where: { accountNumber: cleanId } });
 };
 
 export const executeTransfer = async (data: TransferRequest) => {
   if (!["PEN", "USD", "EUR"].includes(data.currency)) {
     throw new TransferError(400, "Invalid currency");
+  }
+
+  if (!/^\d+(\.\d{1,4})?$/.test(data.amount)) {
+    throw new TransferError(400, "Amount must be a positive decimal string with at most 4 decimal places");
   }
 
   let transferAmount: Prisma.Decimal;
@@ -41,8 +50,8 @@ export const executeTransfer = async (data: TransferRequest) => {
   }
 
   const [fromAccount, toAccount] = await Promise.all([
-    prisma.account.findFirst({ where: buildAccountWhere(data.fromAccountIdentifier) }),
-    prisma.account.findFirst({ where: buildAccountWhere(data.toAccountIdentifier) }),
+    getAccount(data.fromAccountIdentifier),
+    getAccount(data.toAccountIdentifier),
   ]);
 
   if (!fromAccount || !toAccount) {
@@ -104,6 +113,7 @@ export const executeTransfer = async (data: TransferRequest) => {
         currency: data.currency as "PEN" | "USD" | "EUR",
         status: "COMPLETED",
         description: description,
+        processedAt: new Date(),
       }
     });
 
