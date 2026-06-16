@@ -4,6 +4,7 @@ import cors from "cors";
 import { healthRoutes } from "./routes/health.routes.js";
 import { usersRoutes } from "./routes/users.routes.js";
 import { accountsRoutes } from "./routes/accounts.routes.js";
+import { transfersRoutes } from "./routes/transfers.routes.js";
 
 export const app: Express = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/", healthRoutes);
 app.use("/users", usersRoutes);
 app.use("/accounts", accountsRoutes);
+app.use("/transfers", transfersRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
