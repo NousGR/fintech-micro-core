@@ -1,9 +1,23 @@
-node_modules
-# Keep environment variables out of version control
+# Environment variables
 .env
+.env.*
+!.env.example
 
-/generated/prisma
+# Dependencies
+node_modules/
 
-.env
-node_modules
-/generated
+# Generated artifacts
+generated/
+dist/
+coverage/
+
+# Local IDE / editor metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local temporary files
+*~
+.DS_Store
+Thumbs.db
