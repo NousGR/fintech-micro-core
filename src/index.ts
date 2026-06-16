@@ -57,8 +57,28 @@ app.get("/users", async (_req: Request, res: Response, next: NextFunction) => {
       orderBy: {
         createdAt: "desc",
       },
-      include: {
-        accounts: true,
+      select: {
+        id: true,
+        email: true,
+        documentNumber: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        accounts: {
+          select: {
+            id: true,
+            accountNumber: true,
+            type: true,
+            status: true,
+            currency: true,
+            balance: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
     });
 
