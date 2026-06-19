@@ -1,0 +1,24 @@
+info:
+  name: Invalid Currency
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/transfers"
+  body:
+    type: json
+    data: |-
+      {
+        "fromAccountIdentifier": "001-00000000001",
+        "toAccountIdentifier": "001-00000000002",
+        "amount": "10.00",
+        "currency": "ARS"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

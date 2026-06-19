@@ -1,0 +1,24 @@
+info:
+  name: Too Many Decimals
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/transfers"
+  body:
+    type: json
+    data: |-
+      {
+        "fromAccountIdentifier": "001-00000000001",
+        "toAccountIdentifier": "001-00000000002",
+        "amount": "10.00001",
+        "currency": "PEN"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

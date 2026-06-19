@@ -1,0 +1,25 @@
+info:
+  name: Valid Transfer
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/transfers"
+  body:
+    type: json
+    data: |-
+      {
+        "fromAccountIdentifier": "67e604f6-4ba2-4c40-86e2-7fa49a505bfd",
+        "toAccountIdentifier": "a78907e3-5e80-44de-a255-41ec7f3077aa",
+        "amount": "10.00",
+        "currency": "PEN",
+        "description": "Transfer created from Bruno"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

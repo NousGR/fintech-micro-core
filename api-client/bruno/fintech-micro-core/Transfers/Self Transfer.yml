@@ -1,0 +1,24 @@
+info:
+  name: Self Transfer
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/transfers"
+  body:
+    type: json
+    data: |-
+      {
+        "fromAccountIdentifier": "67e604f6-4ba2-4c40-86e2-7fa49a505bfd",
+        "toAccountIdentifier": "67e604f6-4ba2-4c40-86e2-7fa49a505bfd",
+        "amount": "10.00",
+        "currency": "PEN"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
