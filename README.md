@@ -108,8 +108,8 @@ The `POST /transfers` endpoint handles transferring funds between two accounts.
 
 ```json
 {
-  "fromAccountIdentifier": "001-0000000001",
-  "toAccountIdentifier": "001-0000000002",
+  "fromAccountIdentifier": "001-000000000001",
+  "toAccountIdentifier": "001-000000000002",
   "amount": "150.00",
   "currency": "PEN",
   "description": "Invoice payment"
