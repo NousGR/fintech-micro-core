@@ -85,6 +85,7 @@ The database uses PostgreSQL with the following relations:
 
 ### Transfers
 
+- `GET /transfers` - Lists the most recent transfers. Returns up to 20 records ordered by creation date descending. Each item includes the `id`, `amount`, `currency`, `status`, `description`, `processedAt`, `createdAt`, `fromAccount`, and `toAccount`. To protect sensitive data, the `fromAccount` and `toAccount` objects expose only their `id` and `accountNumber`.
 - `POST /transfers` - Initiates a fund transfer from one account to another.
 
 ## Transfer Flow
