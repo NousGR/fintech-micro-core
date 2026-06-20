@@ -17,7 +17,7 @@ export class TransferError extends Error {
   }
 }
 
-const isUUID = (str: string) => 
+const isUUID = (str: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 const getAccount = async (identifier: string) => {
@@ -161,4 +161,37 @@ export const executeTransfer = async (data: TransferRequest) => {
       balanceAfter: t.balanceAfter
     }))
   };
+};
+
+export const getRecentTransfers = async () => {
+  const transfers = await prisma.transfer.findMany({
+    take: 20,
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      amount: true,
+      currency: true,
+      status: true,
+      description: true,
+      processedAt: true,
+      createdAt: true,
+      fromAccount: {
+        select: {
+          id: true,
+          accountNumber: true,
+        },
+      },
+      toAccount: {
+        select: {
+          id: true,
+          accountNumber: true,
+        },
+      },
+    },
+  });
+
+  return transfers.map((t) => ({
+    ...t,
+    amount: t.amount.toString(),
+  }));
 };

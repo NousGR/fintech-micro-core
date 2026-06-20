@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { executeTransfer, TransferError } from "../services/transfers.service.js";
+import { executeTransfer, getRecentTransfers, TransferError } from "../services/transfers.service.js";
 
 export const createTransfer = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -40,6 +40,15 @@ export const createTransfer = async (req: Request, res: Response, next: NextFunc
     if (error instanceof Error && (error as TransferError).isTransferError) {
       return res.status((error as TransferError).statusCode).json({ error: error.message });
     }
+    next(error);
+  }
+};
+
+export const listTransfers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const transfers = await getRecentTransfers();
+    res.status(200).json({ data: transfers });
+  } catch (error) {
     next(error);
   }
 };
