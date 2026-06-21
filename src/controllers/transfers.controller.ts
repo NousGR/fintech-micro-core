@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { executeTransfer, getRecentTransfers, TransferError } from "../services/transfers.service.js";
+import { executeTransfer, getRecentTransfers, TransferError, type GetTransfersFilters } from "../services/transfers.service.js";
 
 export const createTransfer = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -46,9 +46,48 @@ export const createTransfer = async (req: Request, res: Response, next: NextFunc
 
 export const listTransfers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const transfers = await getRecentTransfers();
+    const { limit, status, accountIdentifier } = req.query;
+
+    let parsedLimit: number | undefined;
+    if (limit !== undefined) {
+      if (typeof limit !== "string" || !/^\d+$/.test(limit)) {
+        return res.status(400).json({ error: "limit must be a positive integer" });
+      }
+      parsedLimit = parseInt(limit, 10);
+      if (parsedLimit < 1 || parsedLimit > 50) {
+        return res.status(400).json({ error: "limit must be between 1 and 50" });
+      }
+    }
+
+    let parsedStatus: "PENDING" | "COMPLETED" | "FAILED" | "REVERSED" | undefined;
+    if (status !== undefined) {
+      const validStatuses = ["PENDING", "COMPLETED", "FAILED", "REVERSED"];
+      if (typeof status !== "string" || !validStatuses.includes(status)) {
+        return res.status(400).json({ error: "status must be one of: PENDING, COMPLETED, FAILED, REVERSED" });
+      }
+      parsedStatus = status as "PENDING" | "COMPLETED" | "FAILED" | "REVERSED";
+    }
+
+    let parsedAccountIdentifier: string | undefined;
+    if (accountIdentifier !== undefined) {
+      if (typeof accountIdentifier !== "string" || !accountIdentifier.trim()) {
+        return res.status(400).json({ error: "accountIdentifier must be a non-empty string" });
+      }
+      parsedAccountIdentifier = accountIdentifier.trim();
+    }
+
+    const filters: GetTransfersFilters = {};
+    if (parsedLimit !== undefined) filters.limit = parsedLimit;
+    if (parsedStatus !== undefined) filters.status = parsedStatus;
+    if (parsedAccountIdentifier !== undefined) filters.accountIdentifier = parsedAccountIdentifier;
+
+    const transfers = await getRecentTransfers(filters);
+
     res.status(200).json({ data: transfers });
   } catch (error) {
+    if (error instanceof Error && (error as TransferError).isTransferError) {
+      return res.status((error as TransferError).statusCode).json({ error: error.message });
+    }
     next(error);
   }
 };

@@ -163,9 +163,37 @@ export const executeTransfer = async (data: TransferRequest) => {
   };
 };
 
-export const getRecentTransfers = async () => {
+export type GetTransfersFilters = {
+  limit?: number;
+  status?: "PENDING" | "COMPLETED" | "FAILED" | "REVERSED";
+  accountIdentifier?: string;
+};
+
+export const getRecentTransfers = async (filters?: GetTransfersFilters) => {
+  let accountFilterId: string | undefined;
+
+  if (filters?.accountIdentifier) {
+    const account = await getAccount(filters.accountIdentifier);
+    if (!account) {
+      throw new TransferError(404, "Account not found");
+    }
+    accountFilterId = account.id;
+  }
+
+  const whereClause: Prisma.TransferWhereInput = {};
+  if (filters?.status) {
+    whereClause.status = filters.status;
+  }
+  if (accountFilterId) {
+    whereClause.OR = [
+      { fromAccountId: accountFilterId },
+      { toAccountId: accountFilterId },
+    ];
+  }
+
   const transfers = await prisma.transfer.findMany({
-    take: 20,
+    where: whereClause,
+    take: filters?.limit ?? 20,
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
