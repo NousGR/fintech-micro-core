@@ -85,7 +85,17 @@ The database uses PostgreSQL with the following relations:
 
 ### Transfers
 
-- `GET /transfers` - Lists the most recent transfers. Returns up to 20 records ordered by creation date descending. Each item includes the `id`, `amount`, `currency`, `status`, `description`, `processedAt`, `createdAt`, `fromAccount`, and `toAccount`. To protect sensitive data, the `fromAccount` and `toAccount` objects expose only their `id` and `accountNumber`.
+- `GET /transfers` - Lists the most recent transfers ordered by creation date descending. Each item includes the `id`, `amount`, `currency`, `status`, `description`, `processedAt`, `createdAt`, `fromAccount`, and `toAccount`. To protect sensitive data, the `fromAccount` and `toAccount` objects expose only their `id` and `accountNumber`.
+  - **Optional Query Parameters**:
+    - `limit`: positive integer from 1 to 50, defaults to 20.
+    - `status`: one of PENDING, COMPLETED, FAILED, REVERSED.
+    - `accountIdentifier`: account UUID or account number. Returns transfers where the account is either the source or destination account.
+  - Invalid filters return 400 responses and unknown accounts return 404.
+  - **Example URLs**:
+    - `GET /transfers?limit=3`
+    - `GET /transfers?status=COMPLETED`
+    - `GET /transfers?accountIdentifier=001-0000000002`
+    - `GET /transfers?accountIdentifier=001-0000000002&status=COMPLETED&limit=3`
 - `POST /transfers` - Initiates a fund transfer from one account to another.
 
 ## Transfer Flow
