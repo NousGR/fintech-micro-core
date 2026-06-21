@@ -1,0 +1,25 @@
+info:
+  name: List Transfers Combined Filters
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseUrl}}/transfers?accountIdentifier=001-0000000002&status=COMPLETED&limit=3"
+  params:
+    - name: accountIdentifier
+      value: 001-0000000002
+      type: query
+    - name: status
+      value: COMPLETED
+      type: query
+    - name: limit
+      value: "3"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

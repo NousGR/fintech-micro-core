@@ -1,0 +1,19 @@
+info:
+  name: Invalid Transfer Status
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{baseUrl}}/transfers?status=CANCELLED"
+  params:
+    - name: status
+      value: CANCELLED
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
